@@ -1,6 +1,7 @@
  'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { LoginForm } from '@/components/auth/login-form';
 import { RegisterForm } from '@/components/auth/register-form';
@@ -14,6 +15,7 @@ import { toast } from 'sonner';
 
 export default function Home() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const router = useRouter();
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [projects, setProjects] = useState<Record<string, ProjectInfo>>({});
   const [isLoadingProjects, setIsLoadingProjects] = useState(false);
@@ -39,6 +41,10 @@ export default function Home() {
 
   const handleProjectCreated = () => {
     loadProjects();
+  };
+
+  const handleProjectClick = (projectName: string) => {
+    router.push(`/projects/${encodeURIComponent(projectName)}`);
   };
 
   if (isLoading) {
@@ -113,7 +119,11 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(projects).map(([name, project]) => (
-              <Card key={name} className="hover:shadow-md transition-shadow">
+              <Card 
+                key={name} 
+                className="hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
+                onClick={() => handleProjectClick(name)}
+              >
                 <CardHeader>
                   <CardTitle className="text-lg">{name}</CardTitle>
                   {project.description && (

@@ -90,7 +90,7 @@ export interface ProjectInput {
   name: string;
   parent?: string;
   description?: string;
-  createEmptyCommit?: boolean;
+  create_empty_commit?: boolean;
   branches?: string[];
   owners?: string[];
   useContributorAgreements?: InheritableBoolean;
@@ -338,4 +338,4 @@ export interface ErrorResponse {
 
 export interface SuccessResponse {
   message: string;
-} 
+}

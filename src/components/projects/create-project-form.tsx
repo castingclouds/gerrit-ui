@@ -18,6 +18,7 @@ export function CreateProjectForm({ onProjectCreated }: CreateProjectFormProps) 
   const [isOpen, setIsOpen] = useState(false);
   const [projectName, setProjectName] = useState('');
   const [description, setDescription] = useState('');
+  const [createEmptyCommit, setCreateEmptyCommit] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,9 +41,15 @@ export function CreateProjectForm({ onProjectCreated }: CreateProjectFormProps) 
       const projectInput: ProjectInput = {
         name: projectName,
         description: description.trim() || undefined,
-        createEmptyCommit: true,
+        create_empty_commit: createEmptyCommit,
         state: ProjectState.ACTIVE,
       };
+
+      console.log('Creating project with input:', projectInput);
+      console.log('createEmptyCommit value:', createEmptyCommit);
+      console.log('create_empty_commit field:', projectInput.create_empty_commit);
+      console.log('Full projectInput object:', JSON.stringify(projectInput, null, 2));
+      console.log('Stringified for network:', JSON.stringify(projectInput));
 
       await gerritApi.createProject(projectName, projectInput);
       toast.success(`Project "${projectName}" created successfully!`);
@@ -50,6 +57,7 @@ export function CreateProjectForm({ onProjectCreated }: CreateProjectFormProps) 
       // Reset form
       setProjectName('');
       setDescription('');
+      setCreateEmptyCommit(true);
       setIsOpen(false);
       
       // Notify parent component
@@ -103,6 +111,28 @@ export function CreateProjectForm({ onProjectCreated }: CreateProjectFormProps) 
             />
           </div>
           
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <input
+                id="createEmptyCommit"
+                type="checkbox"
+                checked={createEmptyCommit}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreateEmptyCommit(e.target.checked)}
+                disabled={isLoading}
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <Label htmlFor="createEmptyCommit" className="text-sm font-normal">
+                Create initial commit
+              </Label>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {createEmptyCommit 
+                ? "Creates a repository with an initial commit and main branch. Good for new projects."
+                : "Creates an empty repository. Use this to push an existing local repository without conflicts."
+              }
+            </p>
+          </div>
+          
           <div className="flex justify-end space-x-2">
             <Button
               type="button"
@@ -123,4 +153,4 @@ export function CreateProjectForm({ onProjectCreated }: CreateProjectFormProps) 
       </DialogContent>
     </Dialog>
   );
-} 
+}

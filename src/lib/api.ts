@@ -170,6 +170,18 @@ class GerritApiClient {
     return this.request<Record<string, ProjectInfo>>(endpoint);
   }
 
+  async deleteProject(projectName: string, force?: boolean): Promise<void> {
+    const searchParams = new URLSearchParams();
+    if (force) searchParams.append('force', 'true');
+
+    const queryString = searchParams.toString();
+    const endpoint = `/a/projects/${projectName}${queryString ? `?${queryString}` : ''}`;
+    
+    return this.request<void>(endpoint, {
+      method: 'DELETE',
+    });
+  }
+
   // Change Management
   async queryChanges(params?: {
     q?: string;
